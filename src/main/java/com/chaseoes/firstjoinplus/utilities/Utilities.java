@@ -1,5 +1,7 @@
 package com.chaseoes.firstjoinplus.utilities;
 
+import com.chaseoes.firstjoinplus.FirstJoinEvent;
+import com.chaseoes.firstjoinplus.FirstJoinPlus;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -13,8 +15,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.logging.Level;
-
-
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -29,9 +29,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.FireworkMeta;
-
-import com.chaseoes.firstjoinplus.FirstJoinEvent;
-import com.chaseoes.firstjoinplus.FirstJoinPlus;
 
 public class Utilities {
 
@@ -156,8 +153,15 @@ public class Utilities {
         string = string.replace("%player_name", player.getName());
         string = string.replace("%player_display_name", player.getDisplayName());
         string = string.replace("%player_uuid", player.getUniqueId().toString());
-        string = string.replace("%player_country", GeoIPUtilities.getCountry(player));
-        string = string.replace("%player_city", GeoIPUtilities.getCity(player));
+        if(string.contains("%player_country")) {
+			try {
+				string = string.replace("%player_country", GeoIPUtilities.getCountry(player));
+			} catch (NullPointerException ex) {
+				string = string.replace("%player_country", "Unknown");
+				FirstJoinPlus.getInstance().getLogger().log(Level.SEVERE, "Invalid country for {0}.", player.getName());
+			}
+		}
+       // string = string.replace("%player_city", GeoIPUtilities.getCity(player));
         string = string.replace("%total_players", getTotalPlayerCount() + "");
         string = string.replace("%random_player", getRandomPlayer().getName());
         string = string.replace("%random_player_display_name", getRandomPlayer().getDisplayName());
